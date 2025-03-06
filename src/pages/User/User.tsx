@@ -4,19 +4,16 @@ import {
   Modal,
   Box,
   CircularProgress,
-  Card,
-  CardContent,
+  Paper,
   Divider,
   Avatar,
   Chip,
-  Grid,
-  Paper,
   Skeleton
 } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { PersonOutline, FormatQuoteOutlined, CloseRounded } from "@mui/icons-material";
+import { PersonOutline, FormatQuoteOutlined, CheckCircleOutline } from "@mui/icons-material";
 
 interface UserData {
   id: number;
@@ -179,65 +176,108 @@ export default function User() {
           <Skeleton variant="rectangular" height={40} width={120} />
         </Box>
       ) : user ? (
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ mb: 3 }}>
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar 
-                    sx={{ 
-                      width: 80, 
-                      height: 80, 
-                      bgcolor: 'primary.light',
-                      fontSize: '2rem',
-                      fontWeight: 'bold',
-                      mr: 3
-                    }}
-                  >
-                    {user.fullname.charAt(0).toUpperCase()}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="h5" gutterBottom fontWeight="bold">
-                      Welcome, {user.fullname.split(' ')[0]}!
-                    </Typography>
-                    <Chip 
-                      label={user.email} 
-                      variant="outlined" 
-                      color="primary" 
-                      size="small"
-                    />
-                  </Box>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+          <Box sx={{ flex: 1 }}>
+            <Paper 
+              elevation={3} 
+              sx={{ 
+                p: 3, 
+                mb: 3,
+                borderRadius: 2,
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  boxShadow: 6
+                }
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Avatar 
+                  sx={{ 
+                    width: 80, 
+                    height: 80, 
+                    bgcolor: 'primary.light',
+                    fontSize: '2rem',
+                    fontWeight: 'bold',
+                    mr: 3,
+                    boxShadow: 2
+                  }}
+                >
+                  {user.fullname.charAt(0).toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Typography variant="h5" gutterBottom fontWeight="bold">
+                    Welcome, {user.fullname.split(' ')[0]}!
+                  </Typography>
+                  <Chip 
+                    label={user.email} 
+                    variant="outlined" 
+                    color="primary" 
+                    size="small"
+                    sx={{ boxShadow: 1 }}
+                  />
                 </Box>
+              </Box>
+              
+              <Box sx={{ mt: 2 }}>
+                <Button 
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpdate}
+                  sx={{ 
+                    fontWeight: 'bold',
+                    mr: 2,
+                    boxShadow: 2,
+                    '&:hover': {
+                      boxShadow: 4
+                    }
+                  }}
+                >
+                  Update
+                </Button>
                 
-                <Box sx={{ mt: 2 }}>
-                  <Button 
-                    variant="contained"
-                    color="primary"
-                    onClick={handleUpdate}
-                    sx={{ 
-                      fontWeight: 'bold',
-                      mr: 2 
-                    }}
-                  >
-                    Update
-                  </Button>
-                  
-                  <Button 
-                    variant="outlined"
-                    color="error"
-                    onClick={async () => { await logout(); }}
-                    sx={{ fontWeight: 'medium' }}
-                  >
-                    Sign out
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                <Button 
+                  variant="outlined"
+                  color="error"
+                  onClick={async () => { await logout(); }}
+                  sx={{ 
+                    fontWeight: 'medium',
+                    boxShadow: 1,
+                    '&:hover': {
+                      boxShadow: 3
+                    }
+                  }}
+                >
+                  Sign out
+                </Button>
+              </Box>
+            </Paper>
+          </Box>
           
-          <Grid item xs={12} md={6}>
-            {combinedResult && (
-              <Paper elevation={2} sx={{ p: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
+          <Box sx={{ flex: 1 }}>
+            {author && quote && (
+              <Paper 
+                elevation={3} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 2, 
+                  bgcolor: 'background.paper',
+                  transition: 'all 0.3s ease-in-out',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    boxShadow: 6
+                  },
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '5px',
+                    height: '100%',
+                    bgcolor: 'primary.light'
+                  }
+                }}
+              >
                 <FormatQuoteOutlined 
                   sx={{ 
                     fontSize: 40, 
@@ -246,13 +286,30 @@ export default function User() {
                     mb: 1
                   }} 
                 />
-                <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 2 }}>
-                  {combinedResult}
+                <Typography 
+                  variant="body1" 
+                  sx={{ 
+                    fontStyle: 'italic', 
+                    mb: 3,
+                    lineHeight: 1.6
+                  }}
+                >
+                  "{quote}"
+                </Typography>
+                <Typography 
+                  variant="subtitle1" 
+                  sx={{ 
+                    textAlign: 'right', 
+                    fontWeight: 'bold',
+                    color: 'text.secondary'
+                  }}
+                >
+                  — {author}
                 </Typography>
               </Paper>
             )}
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       ) : (
         <Typography variant="body1">Не удалось загрузить данные профиля</Typography>
       )}
@@ -269,12 +326,25 @@ export default function User() {
             borderRadius: 2,
             boxShadow: 24,
             p: 4,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '5px',
+              height: '100%',
+              bgcolor: 'primary.light'
+            }
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" component="h2">
-              Requesting the quote
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Запрашиваем цитату
             </Typography>
+            {loading ? 
+              <CircularProgress size={24} sx={{ color: 'primary.main' }} /> : 
+              <CheckCircleOutline color="success" sx={{ fontSize: 28 }} />
+            }
           </Box>
           
           <Divider sx={{ mb: 3 }} />
@@ -288,18 +358,39 @@ export default function User() {
                     sx={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      mb: 1,
-                      color: step.completed ? 'success.main' : 'text.primary'
+                      mb: 1.5,
+                      p: 1.5,
+                      borderRadius: 1,
+                      bgcolor: step.completed ? 'success.light' : 'background.default',
+                      transition: 'all 0.3s ease'
                     }}
                   >
-                    <Typography>
-                      Step {index + 1}: {step.title}
-                    </Typography>
-                    {step.completed && (
-                      <Typography color="success.main" sx={{ ml: 1 }}>
-                        Completed
+                    <Box
+                      sx={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mr: 2,
+                        bgcolor: step.completed ? 'success.main' : 'grey.400',
+                        color: 'white',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {step.completed ? '✓' : index + 1}
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        {step.title}
                       </Typography>
-                    )}
+                      {step.completed && (
+                        <Typography variant="caption" color="success.dark">
+                          Выполнено
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
                 ))}
               </Box>
@@ -308,30 +399,48 @@ export default function User() {
                 variant="contained" 
                 color="error" 
                 onClick={handleClose}
-                sx={{ alignSelf: 'center', mt: 2 }}
+                sx={{ 
+                  alignSelf: 'center', 
+                  mt: 2,
+                  fontWeight: 'bold',
+                  boxShadow: 2,
+                  '&:hover': { boxShadow: 4 }
+                }}
               >
-                Cancel
+                Отменить
               </Button>
             </Box>
           ) : (
             <Box>
               {author && quote && (
-                <>
-                  <Typography variant="body1" sx={{ mb: 1, fontStyle: 'italic' }}>
+                <Paper 
+                  elevation={1} 
+                  sx={{ 
+                    p: 2.5, 
+                    borderRadius: 2, 
+                    bgcolor: 'background.default',
+                    mb: 3
+                  }}
+                >
+                  <Typography variant="body1" sx={{ mb: 2, fontStyle: 'italic', lineHeight: 1.6 }}>
                     "{quote}"
                   </Typography>
-                  <Typography variant="subtitle1" sx={{ mt: 2, textAlign: 'right', fontWeight: 'bold' }}>
+                  <Typography variant="subtitle1" sx={{ mt: 1, textAlign: 'right', fontWeight: 'bold' }}>
                     — {author}
                   </Typography>
-                </>
+                </Paper>
               )}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
                 <Button 
                   variant="contained" 
                   onClick={handleClose}
-                  sx={{ fontWeight: 'medium' }}
+                  sx={{ 
+                    fontWeight: 'bold',
+                    boxShadow: 2,
+                    '&:hover': { boxShadow: 4 }
+                  }}
                 >
-                  Close
+                  Закрыть
                 </Button>
               </Box>
             </Box>

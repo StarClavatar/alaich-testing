@@ -5,11 +5,10 @@ import Login from "./pages/Login/Login";
 import NavBar from "./components/NavBar";
 import AuthContextProvider from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import TabLayout from "./components/TabLayout";
-import { ThemeProvider, createTheme, CssBaseline, Container } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline, Container, useMediaQuery } from "@mui/material";
 
 function App() {
-  // Создаем тему с улучшенными цветами
+  // Создаем тему с улучшенными цветами и адаптивными брейкпоинтами
   const theme = createTheme({
     palette: {
       primary: {
@@ -30,6 +29,16 @@ function App() {
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       h4: {
         fontWeight: 600,
+        fontSize: 'clamp(1.5rem, 5vw, 2.125rem)',
+      },
+      h5: {
+        fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
+      },
+      h6: {
+        fontSize: 'clamp(1rem, 3vw, 1.25rem)',
+      },
+      body1: {
+        fontSize: 'clamp(0.875rem, 2vw, 1rem)',
       },
       button: {
         textTransform: 'none',
@@ -51,6 +60,27 @@ function App() {
           },
         },
       },
+      MuiContainer: {
+        styleOverrides: {
+          root: {
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            '@media (min-width:600px)': {
+              paddingLeft: '24px',
+              paddingRight: '24px',
+            },
+          },
+        },
+      },
+    },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 900,
+        lg: 1200,
+        xl: 1536,
+      },
     },
   });
 
@@ -60,18 +90,23 @@ function App() {
       <AuthContextProvider>
         <BrowserRouter>
           <NavBar />
-          <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
+          <Container 
+            maxWidth="lg" 
+            sx={{ 
+              mt: { xs: 1, sm: 2 }, 
+              mb: { xs: 2, sm: 4 },
+              px: { xs: 1, sm: 2, md: 3 }
+            }}
+          >
             <Routes>
               {/* Публичные маршруты */}
               <Route path="/" element={<Navigate to="/info" replace />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/info" element={<Info />} />
               
-              {/* Защищённые маршруты с вкладками через TabLayout */}
+              {/* Защищённые маршруты */}
               <Route element={<ProtectedRoute />}>
-                <Route element={<TabLayout />}>
-                  <Route path="/info" element={<Info />} />
-                  <Route path="/user" element={<User />} />
-                </Route>
+                <Route path="/user" element={<User />} />
               </Route>
               
               {/* Перенаправление на главную страницу */}

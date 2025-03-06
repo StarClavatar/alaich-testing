@@ -1,19 +1,51 @@
-import { AppBar, Box, Container, Toolbar, Button, Typography, Avatar } from "@mui/material";
-import { useContext } from "react";
+import { AppBar, Box, Container, Toolbar, Button, Typography, Avatar, useMediaQuery, IconButton, Menu, MenuItem } from "@mui/material";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import MenuIcon from '@mui/icons-material/Menu';
+import { useTheme } from '@mui/material/styles';
 
 export default function NavBar() {
   const { token, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     await logout();
     navigate("/info");
+    handleMenuClose();
   };
 
+  const handleInfoClick = () => {
+    navigate("/info");
+    handleMenuClose();
+  };
+
+  const handleProfileClick = () => {
+    navigate("/user");
+    handleMenuClose();
+  };
+
+  const handleLoginClick = () => {
+    navigate("/login");
+    handleMenuClose();
+  };
+
+  // Если пользователь авторизован, на мобильном отображаем только лого и кнопку Выйти
+  const isLoggedInMobile = token && isMobile;
+
   return (
-    <AppBar position="static" sx={{ mb: 2 }}>
+    <AppBar position="static" sx={{ mb: 2, borderRadius: 0 }}>
       <Toolbar>
         <Container maxWidth="xl">
           <Box sx={{ 
@@ -29,71 +61,118 @@ export default function NavBar() {
                 fontWeight: 'bold', 
                 flexGrow: 1,
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                fontSize: isMobile ? '0.9rem' : '1.25rem'
               }}
             >
-              <Avatar sx={{ mr: 1, bgcolor: 'secondary.main' }}>T</Avatar>
-              Тестовое приложение
+              <Avatar sx={{ mr: 1, bgcolor: 'secondary.main', width: isMobile ? 30 : 40, height: isMobile ? 30 : 40 }}>T</Avatar>
+              {(!isLoggedInMobile || !isMobile) && "Тестовое приложение"}
             </Typography>
             
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button 
-                variant="contained" 
-                color="info" 
-                component={Link} 
-                to={token ? "/info" : "/info"}
-                sx={{ 
-                  color: 'white', 
-                  fontWeight: 'bold',
-                  '&:hover': { backgroundColor: 'info.dark' }
-                }}
-              >
-                Информация
-              </Button>
-              
-              {token && (
+            {isMobile ? (
+              <>
+                {isLoggedInMobile ? (
+                  // Авторизованный пользователь на мобильном - только кнопка Выйти
+                  <Button 
+                    variant="contained" 
+                    color="error" 
+                    onClick={handleLogout}
+                    size="small"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      '&:hover': { backgroundColor: 'error.dark' }
+                    }}
+                  >
+                    Выйти
+                  </Button>
+                ) : (
+                  // Неавторизованный пользователь на мобильном - меню с бургером
+                  <>
+                    <IconButton
+                      color="inherit"
+                      aria-label="menu"
+                      onClick={handleMenuOpen}
+                      edge="end"
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleMenuClose}
+                    >
+                      <MenuItem onClick={handleInfoClick}>Информация</MenuItem>
+                      {token && <MenuItem onClick={handleProfileClick}>Профиль</MenuItem>}
+                      {token ? (
+                        <MenuItem onClick={handleLogout}>Выйти</MenuItem>
+                      ) : (
+                        <MenuItem onClick={handleLoginClick}>Войти</MenuItem>
+                      )}
+                    </Menu>
+                  </>
+                )}
+              </>
+            ) : (
+              // Десктопная версия - обычные кнопки
+              <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button 
                   variant="contained" 
-                  color="secondary" 
+                  color="info" 
                   component={Link} 
-                  to="/user"
+                  to="/info"
                   sx={{ 
                     color: 'white', 
                     fontWeight: 'bold',
-                    '&:hover': { backgroundColor: 'secondary.dark' }
+                    '&:hover': { backgroundColor: 'info.dark' }
                   }}
                 >
-                  Профиль
+                  Информация
                 </Button>
-              )}
-              
-              {token ? (
-                <Button 
-                  variant="contained" 
-                  color="error" 
-                  onClick={handleLogout}
-                  sx={{ 
-                    fontWeight: 'bold',
-                    '&:hover': { backgroundColor: 'error.dark' }
-                  }}
-                >
-                  Выйти
-                </Button>
-              ) : (
-                <Button 
-                  variant="contained" 
-                  color="success" 
-                  component={Link} 
-                  to="/login"
-                  sx={{ 
-                    fontWeight: 'bold',
-                    '&:hover': { backgroundColor: 'success.dark' }
-                  }}
-                >
-                  Войти
-                </Button>
-              )}
-            </Box>
+                
+                {token && (
+                  <Button 
+                    variant="contained" 
+                    color="secondary" 
+                    component={Link} 
+                    to="/user"
+                    sx={{ 
+                      color: 'white', 
+                      fontWeight: 'bold',
+                      '&:hover': { backgroundColor: 'secondary.dark' }
+                    }}
+                  >
+                    Профиль
+                  </Button>
+                )}
+                
+                {token ? (
+                  <Button 
+                    variant="contained" 
+                    color="error" 
+                    onClick={handleLogout}
+                    sx={{ 
+                      fontWeight: 'bold',
+                      '&:hover': { backgroundColor: 'error.dark' }
+                    }}
+                  >
+                    Выйти
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="contained" 
+                    color="success" 
+                    component={Link} 
+                    to="/login"
+                    sx={{ 
+                      fontWeight: 'bold',
+                      '&:hover': { backgroundColor: 'success.dark' }
+                    }}
+                  >
+                    Войти
+                  </Button>
+                )}
+              </Box>
+            )}
           </Box>
         </Container>
       </Toolbar>
