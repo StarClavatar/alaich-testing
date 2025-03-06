@@ -1,54 +1,64 @@
-# React + TypeScript + Vite
+# Приложение для цитат
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Функциональность
 
-Currently, two official plugins are available:
+- Личный профиль пользователя
+- просмотр цитат с указанием авторов
+- Адаптивный дизайн для мобильных устройств
+- Информационная страница
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Технологии
 
-## Expanding the ESLint configuration
+- Frontend: React, TypeScript, Material-UI
+- Маршрутизация: React Router
+- Управление состоянием: React Context API
+- UI: Material-UI
+- Запросы к API: Axios
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Установка и запуск
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Требования
+
+- Node.js (версия 14.x или выше)
+- npm или yarn
+
+### Установка зависимостей
+
+```bash
+# Установка зависимостей
+npm install
+# или
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Запуск проекта в режиме разработки
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+# Запуск frontend приложения
+npm start
+# или
+yarn start
 ```
+
+Приложение будет доступно по адресу [http://localhost:5173](http://localhost:5173)
+
+### Запуск сервера API
+
+```bash
+# Запуск сервера API
+npm run server
+# или
+yarn server
+```
+
+Сервер API будет доступен по адресу [http://localhost:5001](http://localhost:5001)
+
+## Сборка для продакшена
+
+```bash
+npm run build
+# или
+yarn build
+```
+
+Собранные файлы будут находиться в директории `build/`

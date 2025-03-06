@@ -5,10 +5,9 @@ import Login from "./pages/Login/Login";
 import NavBar from "./components/NavBar";
 import AuthContextProvider from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { ThemeProvider, createTheme, CssBaseline, Container, useMediaQuery } from "@mui/material";
+import { ThemeProvider, createTheme, CssBaseline, Container } from "@mui/material";
 
 function App() {
-  // Создаем тему с улучшенными цветами и адаптивными брейкпоинтами
   const theme = createTheme({
     palette: {
       primary: {

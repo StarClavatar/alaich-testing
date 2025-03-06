@@ -2,7 +2,6 @@ import { AppBar, Box, Container, Toolbar, Button, Typography, Avatar, useMediaQu
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import MenuIcon from '@mui/icons-material/Menu';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useTheme } from '@mui/material/styles';
 
@@ -12,50 +11,38 @@ export default function NavBar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleDropdownMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  const handleDropdownMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
 
   const handleLogout = async () => {
     await logout();
     navigate("/info");
     handleMenuClose();
-    handleDropdownMenuClose();
   };
 
   const handleInfoClick = () => {
     navigate("/info");
     handleMenuClose();
-    handleDropdownMenuClose();
   };
 
   const handleProfileClick = () => {
     navigate("/user");
     handleMenuClose();
-    handleDropdownMenuClose();
   };
 
   const handleLoginClick = () => {
     navigate("/login");
     handleMenuClose();
-    handleDropdownMenuClose();
   };
 
-  // На мобильных устройствах - всегда используем дропдаун
   const useMobileDropdown = isMobile;
 
   return (
@@ -91,7 +78,6 @@ export default function NavBar() {
             </Typography>
             
             {useMobileDropdown ? (
-              // Мобильная версия - всегда используем дропдаун
               <>
                 <IconButton
                   color="inherit"
@@ -122,7 +108,6 @@ export default function NavBar() {
                 </Menu>
               </>
             ) : (
-              // Десктопная версия - обычные кнопки
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button 
                   variant="contained" 
