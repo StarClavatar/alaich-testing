@@ -1,0 +1,34 @@
+{
+    "info": {
+      "success": true,
+      "data": {
+        "info": "Some information about the company."
+      }
+    },
+    "users": [
+      {
+        "id": 1,
+        "email": "aleksei@example.com",
+        "password": "lkJlkn8hj",
+        "token": "fake-jwt-token",
+        "fullname": "Kama Pulya"
+      }
+    ],
+    "authors": [
+      { "authorId": 1, "name": "Albert Einstein" },
+      { "authorId": 2, "name": "Кама Пуля" },
+      { "authorId": 3, "name": "Джейсон Стетхем" }
+    ],
+    "quotes": [
+      { "quoteId": 1, "authorId": 1, "quote": "Imagination is more important than knowledge. For knowledge is limited, whereas imagination embraces the entire world, stimulating progress, giving birth to evolution." },
+      { "quoteId": 2, "authorId": 2, "quote": "Не важно с какой скоростью ты двигаешься, братишка, главное не останавливайся ежжи, пока остановка не стала последней ежжи" },
+      { "quoteId": 3, "authorId": 3, "quote": "Если жена делает тебя счастливым, то какая разница чья она жена?" },
+      { "quoteId": 4, "authorId": 3, "quote": "Когда я смотрю на солнце оно щурится" },
+      { "quoteId": 5, "authorId": 2, "quote": "Весь мир будет против меня - я прав ежжи, я вдохновляюсь этим ежжи" },
+      { "quoteId": 6, "authorId": 2, "quote": "Если ты дерьмо не бросишь - дерьмо тебя бросит ежжи" },
+      { "quoteId": 7, "authorId": 3, "quote": "Когда я смотрю на солнце - оно щурится" },
+      { "quoteId": 8, "authorId": 3, "quote": "Хороший человек плохой воздух в себе держать не будет" }
+      
+      
+    ]
+  }
