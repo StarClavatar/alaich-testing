@@ -213,7 +213,6 @@ export default function User() {
                     variant="outlined" 
                     color="primary" 
                     size="small"
-                    sx={{ boxShadow: 1 }}
                   />
                 </Box>
               </Box>
