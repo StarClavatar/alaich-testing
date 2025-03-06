@@ -1,6 +1,6 @@
 import { Typography, Box, Skeleton, Card, CardContent, Divider } from "@mui/material";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { infoApi } from "../../api/apiClient";
 import { InfoOutlined } from "@mui/icons-material";
 
 export default function Info() {
@@ -9,11 +9,16 @@ export default function Info() {
 
   useEffect(() => {
     const fetchInfo = async () => {
+      if (info) {
+        setLoading(false);
+        return;
+      }
+      
       setLoading(true);
       try {
-        const response = await axios.get("http://localhost:5001/info");
-        if (response.data.success) {
-          setInfo(response.data.data.info);
+        const response = await infoApi.getInfo({ forceRefresh: false });
+        if (response.success) {
+          setInfo(response.data.info);
         }
       } catch (error) {
         console.error("Failed to fetch info", error);
@@ -23,7 +28,7 @@ export default function Info() {
     };
 
     fetchInfo();
-  }, []);
+  }, [info]);
 
   return (
     <Box sx={{ py: 2 }}>

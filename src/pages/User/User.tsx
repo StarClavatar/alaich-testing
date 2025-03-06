@@ -12,15 +12,8 @@ import {
 } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { userApi, UserData, isCancel } from "../../api/apiClient";
 import { PersonOutline, FormatQuoteOutlined, CheckCircleOutline } from "@mui/icons-material";
-
-interface UserData {
-  id: number;
-  email: string;
-  fullname: string;
-  token: string;
-}
 
 interface StepStatus {
   title: string;
@@ -43,17 +36,16 @@ export default function User() {
   const [combinedResult, setCombinedResult] = useState<string | null>(null);
 
   const fetchUser = async () => {
+    if (user) {
+      setLoadingProfile(false);
+      return;
+    }
+    
     setLoadingProfile(true);
     try {
-      const response = await axios.get("http://localhost:5001/api/profile", {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      if (response.data.success) {
-        setUser(response.data.data);
+      const response = await userApi.getProfile({ forceRefresh: false });
+      if (response.success) {
+        setUser(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch user", error);
@@ -67,74 +59,52 @@ export default function User() {
     setLoading(true);
     setCombinedResult(null);
     
-    // Сбрасываем состояние шагов
     setSteps([
       { title: "Запрос автора...", completed: false },
       { title: "Запрос цитаты...", completed: false }
     ]);
     
-    // Создаем новый AbortController для отмены запросов
     const controller = new AbortController();
     setAbortController(controller);
 
     try {
-      // Первый запрос - получение автора
       setAuthor(null);
       setQuote(null);
       
       console.log("Sending request to /api/author");
-      const authorResponse = await axios.get("http://localhost:5001/api/author", {
-        withCredentials: true,
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
+      const authorResponse = await userApi.getAuthor({ signal: controller.signal });
       
-      if (authorResponse.data.success) {
-        const authorData = authorResponse.data.data;
+      if (authorResponse.success) {
+        const authorData = authorResponse.data;
         setAuthor(authorData.name);
         
-        // Отмечаем первый шаг как завершенным
         setSteps(prev => [
           { ...prev[0], completed: true },
           prev[1]
         ]);
         
-        // Второй запрос - получение цитаты для автора
         console.log(`Sending request to /api/quote with authorId=${authorData.authorId}`);
-        const quoteResponse = await axios.get(
-          `http://localhost:5001/api/quote?authorId=${authorData.authorId}`,
-          {
-            withCredentials: true,
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            }
-          }
+        const quoteResponse = await userApi.getQuote(
+          authorData.authorId,
+          { signal: controller.signal }
         );
         
-        if (quoteResponse.data.success) {
-          const quoteData = quoteResponse.data.data;
+        if (quoteResponse.success) {
+          const quoteData = quoteResponse.data;
           setQuote(quoteData.quote);
           
-          // Отмечаем второй шаг как завершенным
           setSteps(prev => [
             prev[0],
             { ...prev[1], completed: true }
           ]);
           
-          // Объединяем имя автора и цитату в результат
           setCombinedResult(`${authorData.name}: ${quoteData.quote}`);
         }
       }
     } catch (error) {
-      if (axios.isCancel(error)) {
+      console.error("Error:", error);
+      if (isCancel(error)) {
         console.log("Request was cancelled");
-      } else {
-        console.error("Failed to fetch author or quote", error);
       }
     } finally {
       setLoading(false);
@@ -144,7 +114,6 @@ export default function User() {
   const handleClose = () => {
     setOpen(false);
     
-    // Отменяем текущие запросы
     if (abortController) {
       abortController.abort();
       setAbortController(null);
@@ -152,10 +121,14 @@ export default function User() {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchUser();
-    }
-  }, [token]);
+    fetchUser();
+    
+    return () => {
+      if (abortController) {
+        abortController.abort();
+      }
+    };
+    }, [token]);
 
   return (
     <Box sx={{ py: 2 }}>

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState, ReactNode } from "react";
-import axios from "axios";
+import { authApi, UserData } from "../api/apiClient";
 
 interface AuthContextType {
   token: string | null;
@@ -27,11 +27,9 @@ export default function AuthContextProvider({
     const checkAuth = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("http://localhost:5001/api/profile", {
-          withCredentials: true,
-        });
-        if (response.data.success) {
-          setToken(response.data.data.token);
+        const response = await authApi.checkAuth();
+        if (response.success) {
+          setToken(response.data.token);
         }
       } catch {
         setToken(null);
@@ -45,13 +43,9 @@ export default function AuthContextProvider({
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5001/api/login",
-        { email, password },
-        { withCredentials: true }
-      );
-      if (response.data.success) {
-        setToken(response.data.data.token);
+      const response = await authApi.login(email, password);
+      if (response.success) {
+        setToken(response.data.token);
       }
     } catch (error) {
       console.error("Login failed", error);
@@ -60,9 +54,7 @@ export default function AuthContextProvider({
 
   const logout = async () => {
     try {
-      await axios.delete("http://localhost:5001/api/logout", {
-        withCredentials: true,
-      });
+      await authApi.logout();
       setToken(null);
     } catch (error) {
       console.error("Logout failed", error);
